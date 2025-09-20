@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== BASE DARK BACKGROUND ===== -->
+    <color name="app_bg">#05070A</color>           <!-- main activity/window bg -->
+    <color name="surface">#0B0F14</color>          <!-- cards/toolbars -->
+    <color name="surface_variant">#121A23</color>
+    <color name="background">#05070A</color>
+
+    <!-- ===== NEON PRIMARIES ===== -->
+    <color name="primary">#00F0FF</color>          <!-- neon aqua -->
+    <color name="on_primary">#051017</color>       <!-- text/icons on aqua -->
+
+    <color name="secondary">#FF3DFF</color>        <!-- neon magenta -->
+    <color name="on_secondary">#140414</color>
+
+    <color name="tertiary">#19FF82</color>         <!-- neon green -->
+    <color name="on_tertiary">#07130C</color>
+
+    <!-- ===== TEXT / CONTENT COLORS ===== -->
+    <color name="on_background">#D8E7F7</color>    <!-- main text on bg -->
+    <color name="on_surface">#CFE0F2</color>       <!-- text on surfaces -->
+    <color name="on_surface_variant">#9FB2C5</color>
+    <color name="outline">#2B3A49</color>
+    <color name="outline_variant">#1B2733</color>
+
+    <!-- ===== SYSTEM BARS ===== -->
+    <color name="status_bar">#05070A</color>
+    <color name="nav_bar">#05070A</color>
+
+    <!-- ===== COMPONENT BACKGROUNDS ===== -->
+    <color name="card_bg">#0F1621</color>          <!-- cards -->
+    <color name="button_bg">#00F0FF</color>        <!-- buttons (same as primary) -->
+
+    <!-- ===== RIPPLE / EFFECTS ===== -->
+    <color name="ripple_neon">#3300F0FF</color>    <!-- translucent aqua -->
+    <color name="shadow_neon">#8000F0FF</color>    <!-- text glow shadow -->
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
+    <!-- ===== GREEN (cool) ===== -->
+    <color name="card_bg_green">#0D1F17</color>   <!-- dark greenish surface -->
+    <color name="stroke_green">#19FF82</color>    <!-- neon mint/green -->
+
+    <!-- ===== RED (warm option 1) ===== -->
+    <color name="card_bg_red">#1A0E10</color>     <!-- dark crimson surface -->
+    <color name="stroke_red">#FF3D5A</color>      <!-- neon rose/red -->
+
+    <!-- ===== ORANGE (warm option 2) ===== -->
+    <color name="card_bg_orange">#1A1209</color>  <!-- dark amber surface -->
+    <color name="stroke_orange">#FF7A1A</color>   <!-- neon orange -->
+
+</resources>

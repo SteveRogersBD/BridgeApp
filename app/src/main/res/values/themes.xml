@@ -1,0 +1,118 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- ========= BASE APP THEME ========= -->
+    <style name="Base.Theme.Bridge" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- brand / accent -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="colorTertiary">@color/tertiary</item>
+        <item name="colorOnTertiary">@color/on_tertiary</item>
+
+        <!-- surfaces (cards/toolbars/etc.) -->
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/outline_variant</item>
+
+        <!-- window / system bars -->
+        <item name="android:windowBackground">@color/app_bg</item>
+        <!-- optional: also set platform default bg color -->
+        <item name="android:colorBackground">@color/app_bg</item>
+
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:navigationBarColor">@color/nav_bar</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+
+        <!-- ripples -->
+        <item name="rippleColor">@color/ripple_neon</item>
+
+        <!-- global widget defaults -->
+        <item name="android:textViewStyle">@style/Widget.Bridge.TextView</item>
+        <item name="toolbarStyle">@style/Widget.Bridge.Toolbar</item>
+        <item name="materialButtonStyle">@style/Widget.Bridge.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.Bridge.Card</item>
+
+        <!-- shapes -->
+        <item name="shapeAppearanceSmallComponent">@style/Shape.Bridge.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/Shape.Bridge.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/Shape.Bridge.Large</item>
+
+        <!-- keep if something references it (legacy) -->
+        <item name="colorPrimaryDark">#590C0C</item>
+    </style>
+
+    <!-- public alias -->
+    <style name="Theme.Bridge" parent="Base.Theme.Bridge" />
+
+    <!-- ========= SHAPES ========= -->
+    <style name="Shape.Bridge.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="Shape.Bridge.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="Shape.Bridge.Large" parent="ShapeAppearance.Material3.Corner.Large">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
+    </style>
+
+    <!-- ========= TEXTVIEW ========= -->
+    <!-- Use AppCompat as parent; TextView isn't a Material widget -->
+    <style name="Widget.Bridge.TextView" parent="@style/Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:textColorHint">@color/on_surface_variant</item>
+        <!-- subtle neon glow -->
+        <item name="android:shadowColor">@color/shadow_neon</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">6</item>
+    </style>
+
+    <!-- ========= TOOLBAR ========= -->
+    <style name="Widget.Bridge.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="backgroundTint">@color/surface</item>
+        <item name="titleTextColor">@color/on_surface</item>
+        <item name="subtitleTextColor">@color/on_surface_variant</item>
+        <item name="navigationIconTint">@color/primary</item>
+        <item name="titleCentered">true</item>
+        <item name="android:popupTheme">@style/ThemeOverlay.Material3.Dark</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- ========= BUTTON ========= -->
+    <style name="Widget.Bridge.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="rippleColor">@color/ripple_neon</item>
+        <item name="shapeAppearance">@style/Shape.Bridge.Medium</item>
+        <item name="strokeColor">#80FFFFFF</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textStyle">bold</item>
+        <!-- remove default insets for tighter look -->
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <!-- ========= CARD ========= -->
+    <style name="Widget.Bridge.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/card_bg</item>
+        <item name="strokeColor">@color/primary</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="shapeAppearance">@style/Shape.Bridge.Large</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="cardElevation">8dp</item>
+    </style>
+
+</resources>
