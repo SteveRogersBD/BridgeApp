@@ -1,5 +1,7 @@
 package com.example.bridge.adapters;
 
+import static java.security.AccessController.getContext;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +44,7 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
     }
 
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder,
                                  @SuppressLint("RecyclerView") int position)
@@ -58,6 +61,15 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
         ImageViewCompat.setImageTintList(holder.imageView, ColorStateList.valueOf(iconTint));
         holder.textView.setTextColor(iconTint);
         holder.cardView.setStrokeColor(stroke);
+        if(position == 0) {
+            holder.view.setBackground(context.getDrawable(R.drawable.circle_glow_bg));
+        } else if (position==1) {
+            holder.view.setBackground(context.getDrawable(R.drawable.circle_green_glow));
+        }else if (position==2) {
+            holder.view.setBackground(context.getDrawable(R.drawable.circle_red_glow));
+        }else if (position==3) {
+            holder.view.setBackground(context.getDrawable(R.drawable.circle_orange_glow));
+        }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,12 +97,14 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
         TextView textView;
         MaterialCardView cardView;
         LinearLayout linearLayout;
+        View view;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image);
             textView = itemView.findViewById(R.id.title);
             cardView = itemView.findViewById(R.id.card);
             linearLayout = itemView.findViewById(R.id.container);
+            view = itemView.findViewById(R.id.view);
         }
     }
 

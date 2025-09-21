@@ -9,15 +9,21 @@
     tools:context=".ChatActivity">
 
 
-
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/toolBar"/>
 
     <!-- Chat RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolBar"
         android:clipToPadding="false"
         android:padding="8dp"
+        tools:listitem="@layout/item_layout"
         android:layout_above="@+id/send_card"
         android:scrollbars="none" />
 

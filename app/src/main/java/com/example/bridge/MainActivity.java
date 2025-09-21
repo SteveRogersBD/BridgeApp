@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -15,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.bridge.adapters.PagerAdapter;
 import com.example.bridge.databinding.ActivityMainBinding;
 import com.example.bridge.models.PagerItem;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +29,13 @@ public class MainActivity extends AppCompatActivity {
     PagerAdapter adapter;
     ViewPager2 vp;
     List<PagerItem>itemList;
-
+    MaterialToolbar topBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-//        list.add(R.drawable.mic);
-//        list.add(R.drawable.mic);
-//        list.add(R.drawable.mic);
-//        list.add(R.drawable.mic);
-//        list.add(R.drawable.mic);
-//
-//        vp = binding.viewPager2;
+
 
         itemList = new ArrayList<>();
         itemList.add(new PagerItem(R.drawable.mic,"Conversation",
@@ -47,18 +44,19 @@ public class MainActivity extends AppCompatActivity {
                 R.color.stroke_green,R.color.stroke_green));
         itemList.add(new PagerItem(R.drawable.mic,"Call",
                 R.color.stroke_red,R.color.stroke_red));
+        itemList.add(new PagerItem(R.drawable.mic,"Call",
+                R.color.stroke_orange,R.color.stroke_orange));
+
         adapter = new PagerAdapter(MainActivity.this, itemList);
 
-        // carousel effect with scaling
-        vp = binding.viewPager2;
-        vp.setAdapter(adapter);
-        vp.setPageTransformer((page, position) -> {
-            float scale = 0.85f + (1 - Math.abs(position)) * 0.15f;
-            page.setScaleX(scale);
-            page.setScaleY(scale);
-            page.setAlpha(0.5f + (1 - Math.abs(position)) * 0.5f);
-            page.setRotationY(position * -30); // optional 3d tilt
-        });
+        binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
+
+        topBar = findViewById(R.id.topAppBar);
+        setSupportActionBar(topBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
 
     }

@@ -2,36 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:layout_width="220dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <!-- the card is smaller, but the root fills the page -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/card_bg"
         app:cardUseCompatPadding="true"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="12dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/button_bg">
+        app:cardCornerRadius="24dp"
+        app:cardElevation="16dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/primary"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+        
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/container"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center">
 
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/mic"
-                app:tint="@color/button_bg"
-                tools:ignore="ContentDescription" />
+            <!-- Icon container with neon glow effect -->
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp">
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_glow_bg"
+                    android:alpha="0.3" />
+                
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/mic"
+                    app:tint="@color/primary"
+                    tools:ignore="ContentDescription" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/title"
@@ -39,14 +59,30 @@
                 android:layout_height="wrap_content"
                 android:text="Mic"
                 android:gravity="center"
-                android:layout_gravity="center"
-                android:textSize="30sp"
-                android:textColor="@color/button_bg"
-                android:layout_marginBottom="20dp"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_surface"
+                android:shadowColor="@color/shadow_neon"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="8"
                 tools:ignore="HardcodedText" />
 
-        </LinearLayout>
+            <!-- Subtitle for better description -->
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Voice Input"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_variant"
+                android:layout_marginTop="4dp"
+                android:alpha="0.8"
+                tools:ignore="HardcodedText"
+                android:layout_marginBottom="8dp"/>
 
+        </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

@@ -36,7 +36,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ChatModel message = messages.get(position);
-        if(message.getSendBy()== message.SENT_BY_ME)
+        if(message.getSendBy()== ChatModel.SENT_BY_ME)
         {
             holder.leftL.setVisibility(View.GONE);
             holder.rightL.setVisibility(View.VISIBLE);
@@ -54,7 +54,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         return messages.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         LinearLayout leftL,rightL;
         TextView leftTV, rightTV;
         public ViewHolder(@NonNull View itemView) {
