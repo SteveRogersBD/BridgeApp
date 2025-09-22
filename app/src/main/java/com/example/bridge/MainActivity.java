@@ -38,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         itemList = new ArrayList<>();
-        itemList.add(new PagerItem(R.drawable.mic,"Conversation",
+        itemList.add(new PagerItem(R.drawable.chat,"Conversation",
                 R.color.primary,R.color.button_bg));
-        itemList.add(new PagerItem(R.drawable.mic,"Transcription",
+        itemList.add(new PagerItem(R.drawable.trans,"Transcription",
                 R.color.stroke_green,R.color.stroke_green));
-        itemList.add(new PagerItem(R.drawable.mic,"Call",
+        itemList.add(new PagerItem(R.drawable.call,"Call",
                 R.color.stroke_red,R.color.stroke_red));
-        itemList.add(new PagerItem(R.drawable.mic,"Call",
+        itemList.add(new PagerItem(R.drawable.mic,"Transcription",
                 R.color.stroke_orange,R.color.stroke_orange));
 
         adapter = new PagerAdapter(MainActivity.this, itemList);

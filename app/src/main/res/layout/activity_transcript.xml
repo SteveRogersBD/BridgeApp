@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    tools:context=".TranscriptActivity">
+
+    <!-- Top Toolbar -->
+    <include
+        android:id="@+id/topBar_trans"
+        layout="@layout/toobar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Main Content Container -->
+    <ScrollView
+        android:id="@+id/content_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar_trans">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Microphone Visual Block -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/micCard"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="120dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/primary"
+                app:strokeWidth="2dp">
+
+                <FrameLayout
+                    android:id="@+id/micBlock"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <!-- Glow effect background -->
+                    <View
+                        android:id="@+id/micGlow"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:alpha="0.6"
+                        android:background="@drawable/circle_glow_bg" />
+
+                    <!-- Microphone icon -->
+                    <ImageView
+                        android:id="@+id/micIcon"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/microphone"
+                        android:padding="18dp"
+                        android:src="@drawable/mic"
+                        app:tint="@color/primary" />
+
+                </FrameLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Timer Display -->
+            <TextView
+                android:id="@+id/timer_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="00:00:00"
+                android:textColor="@color/on_surface"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/micCard"
+                tools:ignore="HardcodedText" />
+
+            <!-- Status Label -->
+            <TextView
+                android:id="@+id/state_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Ready to record"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/timer_tv"
+                tools:ignore="HardcodedText" />
+
+            <!-- Transcript Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/transcript_card"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="32dp"
+                app:cardBackgroundColor="@color/surface"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/state_tv"
+                app:strokeColor="@color/outline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <!-- Transcript Header -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/surface_variant"
+                        android:padding="12dp"
+                        android:text="Live Transcript"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
+
+                    <!-- Scrollable Transcript Content -->
+                    <ScrollView
+                        android:id="@+id/transcript_scroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:fadeScrollbars="false"
+                        android:fillViewport="true"
+                        android:padding="16dp"
+                        android:scrollbars="vertical">
+
+                        <TextView
+                            android:id="@+id/transcript_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:lineSpacingExtra="4dp"
+                            android:textColor="@color/on_surface"
+                            android:textIsSelectable="true"
+                            android:textSize="16sp"
+                            tools:text="Hello, this is a live transcript.\n\nNew words will appear here in real time as you speak. The text will automatically scroll to show the latest content.\n\nYou can select and copy any part of this transcript." />
+
+                    </ScrollView>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Control Buttons -->
+            <LinearLayout
+                android:id="@+id/control_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/transcript_card">
+
+                <!-- Pause/Resume Button -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="2dp">
+
+                    <ImageView
+                        android:id="@+id/pause_btn"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/play_pause"
+                        android:focusable="true"
+                        android:padding="16dp"
+                        android:src="@drawable/play"
+                        app:tint="@color/primary" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Save Button -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="@color/stroke_green"
+                    app:strokeWidth="2dp">
+
+                    <ImageView
+                        android:id="@+id/save_btn"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/save_transcript"
+                        android:focusable="true"
+                        android:padding="16dp"
+                        android:src="@drawable/save"
+                        app:tint="@color/stroke_green" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

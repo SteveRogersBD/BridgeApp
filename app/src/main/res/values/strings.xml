@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Bridge</string>
+    <string name="microphone">Microphone</string>
+    <string name="pause">Pause</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="save_transcript">Save Transcript</string>
 </resources>
