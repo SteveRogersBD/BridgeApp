@@ -9,12 +9,30 @@ android {
 
     defaultConfig {
         applicationId = "com.example.bridge"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/LICENSE*",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/NOTICE*",
+                "META-INF/*.SF",
+                "META-INF/*.DSA",
+                "META-INF/*.RSA",
+            )
+
+        }
     }
 
     buildTypes {
@@ -44,6 +62,11 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.viewpager2)
     implementation(libs.lottie)
+    implementation(libs.google.genai)
+
+    implementation(libs.generativeai)
+    implementation(libs.guava)
+    implementation(libs.reactive.streams)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

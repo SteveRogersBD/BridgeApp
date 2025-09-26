@@ -43,6 +43,7 @@ public class TranscriptActivity extends AppCompatActivity {
     private ObjectAnimator micPulseAnimator;
     private ObjectAnimator micRotateAnimator;
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

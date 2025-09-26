@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bridge.R;
 import com.example.bridge.models.ChatModel;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        LinearLayout leftL,rightL;
+        MaterialCardView leftL,rightL;
         TextView leftTV, rightTV;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
