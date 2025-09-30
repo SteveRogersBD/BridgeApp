@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import com.example.bridge.databinding.ActivityTranscriptBinding;
 import com.example.bridge.utils.AudioLevelSampler;
 import com.example.bridge.utils.GlowPulseController;
+import com.example.bridge.utils.SpeechLiveTranscriber;
 
 public class TranscriptActivity extends AppCompatActivity {
 
@@ -42,6 +43,9 @@ public class TranscriptActivity extends AppCompatActivity {
     private AudioLevelSampler sampler;
     private ObjectAnimator micPulseAnimator;
     private ObjectAnimator micRotateAnimator;
+
+    private SpeechLiveTranscriber stt;
+    private StringBuilder fullTranscript = new StringBuilder();
 
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -139,8 +143,7 @@ public class TranscriptActivity extends AppCompatActivity {
         startRecordingAnimations();
 
         updateUIState();
-        
-        // TODO: Start your STT recorder here
+        if(stt != null) stt.start(true); // Enable continuous mode
         Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
     }
 
@@ -155,6 +158,7 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Pause your STT recorder here
+        if (stt != null) stt.stop();
         Toast.makeText(this, "Recording paused", Toast.LENGTH_SHORT).show();
     }
 
@@ -170,6 +174,7 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Resume your STT recorder here
+        if (stt != null) stt.start(true);   // resume listening with continuous mode
         Toast.makeText(this, "Recording resumed", Toast.LENGTH_SHORT).show();
     }
 
@@ -189,6 +194,7 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Stop your STT recorder here
+        if (stt != null) stt.cancel();       // fully end session
         Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
     }
 
@@ -285,9 +291,34 @@ public class TranscriptActivity extends AppCompatActivity {
     }
 
     private void onMicPermissionGranted() {
-        // enable controls if you had disabled them, optional
-        // e.g., binding.playBtn.setEnabled(true);
+        // create once; reuse
+        stt = new SpeechLiveTranscriber(this, new SpeechLiveTranscriber.Callbacks() {
+            @Override public void onReady() {
+                // optional: show a hint
+                runOnUiThread(() -> binding.stateTv.setText("Listening…"));
+            }
+            @Override public void onPartial(String text) {
+                runOnUiThread(() -> binding.transcriptTv.setText(text));
+            }
+            @Override public void onFinal(String text) {
+                runOnUiThread(() -> {
+                    // append final sentence to the rolling transcript
+                    if (fullTranscript.length() > 0) fullTranscript.append(' ');
+                    fullTranscript.append(text);
+                    binding.transcriptTv.setText(fullTranscript.toString());
+                });
+            }
+            @Override public void onError(String message) {
+                runOnUiThread(() -> {
+                    // Only show toast for serious errors, not for "no speech detected" messages
+                    if (!message.contains("continuing to listen")) {
+                        Toast.makeText(TranscriptActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -332,5 +363,6 @@ public class TranscriptActivity extends AppCompatActivity {
             sampler.stop();
         }
         stopRecordingAnimations();
+        if (stt != null) stt.release();
     }
 }
