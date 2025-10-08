@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -7,38 +9,118 @@
     android:orientation="vertical"
     android:background="@color/app_bg"
     tools:context=".MainActivity">
-    
-<!--    <com.google.android.material.appbar.MaterialToolbar-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="56dp"-->
-<!--        android:id="@+id/toolBar"-->
-<!--        android:background="@color/surface"/>-->
-    <include layout="@layout/toobar"/>
 
-    <!-- Big Welcome Text -->
-    <TextView
-        android:id="@+id/welcome_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Welcome to Bridge"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="@color/primary"
-        android:gravity="center"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginHorizontal="16dp"
-        android:shadowColor="@color/shadow_neon"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="12"
-        tools:ignore="HardcodedText" />
+    <!-- App Bar -->
+    <include layout="@layout/toobar" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/recycler_view"
-        android:clipToPadding="false" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp"
+            android:gravity="center_horizontal"
+            >
+
+            <!-- Hero Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginBottom="40dp">
+
+                <!-- Profile Image with Enhanced Styling -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp">
+
+                    <!-- Glow Background -->
+                    <View
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/circle_glow_bg"
+                        android:alpha="0.6" />
+
+                    <!-- Profile Image -->
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/chris"
+                        android:scaleType="centerCrop"
+                        android:elevation="8dp"
+                        app:riv_oval="true"
+                        app:riv_border_width="3dp"
+                        app:riv_border_color="@color/primary" />
+
+                </FrameLayout>
+
+                <!-- Greeting Text -->
+                <TextView
+                    android:id="@+id/greeting_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ready for a chat?..."
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/on_surface"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:alpha="0.9"
+                    tools:ignore="HardcodedText" />
+
+                <!-- Main Title -->
+                <TextView
+                    android:id="@+id/welcome_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome to Bridge"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:gravity="center"
+                    android:lineSpacingExtra="4dp"
+                    android:shadowColor="@color/shadow_neon"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="12"
+                    tools:ignore="HardcodedText" />
+
+                <!-- Subtitle -->
+                <TextView
+                    android:id="@+id/subtitle_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose your communication experience"
+                    android:textSize="16sp"
+                    android:textColor="@color/on_surface_variant"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:alpha="0.8"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
+
+            <!-- RecyclerView with proper spacing -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.viewpager2)
     implementation(libs.lottie)
     implementation(libs.google.genai)
-
+    implementation(libs.roundedimageview)
     implementation(libs.generativeai)
     implementation(libs.guava)
     implementation(libs.reactive.streams)

@@ -1,5 +1,7 @@
 package com.example.bridge;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -20,8 +22,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.bridge.databinding.ActivityTranscriptBinding;
+import com.example.bridge.models.ChatModel;
 import com.example.bridge.utils.AudioLevelSampler;
 import com.example.bridge.utils.GlowPulseController;
+import com.example.bridge.utils.SimpleSpeechRecognizer;
 
 public class TranscriptActivity extends AppCompatActivity {
 
@@ -42,6 +46,9 @@ public class TranscriptActivity extends AppCompatActivity {
     private AudioLevelSampler sampler;
     private ObjectAnimator micPulseAnimator;
     private ObjectAnimator micRotateAnimator;
+    private SimpleSpeechRecognizer speechRecognizer;
+    private StringBuilder transcript = new StringBuilder();
+
 
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -68,6 +75,51 @@ public class TranscriptActivity extends AppCompatActivity {
 
         // Initialize UI state
         updateUIState();
+
+        // Initialize speech recognizer
+        speechRecognizer = new SimpleSpeechRecognizer(this, new SimpleSpeechRecognizer
+                .SpeechListener() {
+            @Override
+            public void onSpeechReady() {
+                runOnUiThread(()->{
+                    // mic is open; show “speak now”
+                    binding.stateTv.setText("Speak now…");
+
+                });
+
+            }
+
+            @Override
+            public void onSpeechResult(String text) {
+                runOnUiThread(() -> {
+                    // got final text — append to transcript
+                    appendTranscript(text);
+                    // reflect status
+                    binding.stateTv.setText("Listening…");
+                    // keep dictating: start another session if we’re still in active recording state
+                    //restartIfStillRecording(120); // small delay helps avoid BUSY errors
+                });
+            }
+
+            @Override
+            public void onSpeechError(String error) {
+                runOnUiThread(() -> {
+                    // show a friendly error & keep the ui coherent
+                    Toast.makeText(TranscriptActivity.this, error, LENGTH_SHORT).show();
+                    binding.stateTv.setText(error);
+
+                    // common “no speech” / “timeout” cases: auto-retry to feel continuous
+                    if (isRecording && !isPaused &&
+                            (error.contains("No speech") || error.contains("timeout") || error.contains("busy"))) {
+                        binding.stateTv.setText("…listening again");
+                        //restartIfStillRecording(300);
+                    }
+                    // for hard failures (permissions/network), you might NOT retry automatically.
+                });
+
+            }
+        });
+
     }
 
     private void setupAnimations() {
@@ -124,7 +176,7 @@ public class TranscriptActivity extends AppCompatActivity {
             stopRecording();
         }
         // TODO: Implement save functionality
-        Toast.makeText(this, "Transcript saved!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Transcript saved!", LENGTH_SHORT).show();
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -141,7 +193,8 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Start your STT recorder here
-        Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recording started", LENGTH_SHORT).show();
+        speechRecognizer.startListening();
     }
 
     private void pauseRecording() {
@@ -155,7 +208,8 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Pause your STT recorder here
-        Toast.makeText(this, "Recording paused", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recording paused", LENGTH_SHORT).show();
+        speechRecognizer.stopListening();
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -170,7 +224,8 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Resume your STT recorder here
-        Toast.makeText(this, "Recording resumed", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recording resumed", LENGTH_SHORT).show();
+        speechRecognizer.startListening();
     }
 
     private void stopRecording() {
@@ -189,6 +244,9 @@ public class TranscriptActivity extends AppCompatActivity {
         updateUIState();
         
         // TODO: Stop your STT recorder here
+        Toast.makeText(this, "Recording stopped", LENGTH_SHORT).show();
+        // stop the stt engine
+        speechRecognizer.cancel(); // ensures no stray callbacks after stopping
         Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
     }
 
@@ -300,7 +358,7 @@ public class TranscriptActivity extends AppCompatActivity {
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
                     openAppSettings();
                 } else {
-                    Toast.makeText(this, "Microphone permission is required.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Microphone permission is required.", LENGTH_SHORT).show();
                 }
             }
         }
@@ -333,4 +391,17 @@ public class TranscriptActivity extends AppCompatActivity {
         }
         stopRecordingAnimations();
     }
+
+    private void appendTranscript(String text)
+    {
+        if(text==null || text.trim().isEmpty()) return;
+        if(transcript.length()>0) transcript.append("");
+        transcript.append(text.trim());
+        binding.transcriptTv.setText(transcript.toString());
+        // if it's a scrollable TextView, you can scroll to bottom:
+        //   binding.transcriptTv.post(() -> binding.scrollView.fullScroll(View.FOCUS_DOWN));
+
+    }
+
+
 }

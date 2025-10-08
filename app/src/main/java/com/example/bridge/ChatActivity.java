@@ -79,7 +79,8 @@ public class ChatActivity extends AppCompatActivity {
         binding.sendBtn.setOnClickListener(onClickListener);
 
         // Initialize speech recognizer
-        speechRecognizer = new SimpleSpeechRecognizer(this, new SimpleSpeechRecognizer.SpeechListener() {
+        speechRecognizer = new SimpleSpeechRecognizer(this, new SimpleSpeechRecognizer
+                .SpeechListener() {
             @Override
             public void onSpeechReady() {
                 Log.d(TAG, "Speech ready - showing UI");
