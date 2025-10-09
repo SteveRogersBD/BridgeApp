@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
                 // Add message to chat if text is not empty
                 if (!text.trim().isEmpty()) {
                     addMessage(text, ChatModel.SENT_BY_OTHER);
-                    speak(text);
+                    //speak(text);
                     Toast.makeText(ChatActivity.this, "Added: " + text, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(ChatActivity.this, "Empty text received", Toast.LENGTH_SHORT).show();

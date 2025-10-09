@@ -72,6 +72,20 @@ public class TranscriptActivity extends AppCompatActivity {
         // Button click listeners
         binding.pauseBtn.setOnClickListener(v -> pauseBtnClicked());
         binding.saveBtn.setOnClickListener(v -> saveBtnClicked());
+        
+        // Allow tapping the status text to restart speech recognition if needed
+        binding.stateTv.setOnClickListener(v -> {
+            if (isRecording && !isPaused) {
+                binding.stateTv.setText("Restarting…");
+                speechRecognizer.cancel();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    if (isRecording && !isPaused) {
+                        speechRecognizer.startListening();
+                        binding.stateTv.setText("Listening…");
+                    }
+                }, 500);
+            }
+        });
 
         // Initialize UI state
         updateUIState();
@@ -83,7 +97,9 @@ public class TranscriptActivity extends AppCompatActivity {
             public void onSpeechReady() {
                 runOnUiThread(()->{
                     // mic is open; show “speak now”
-                    binding.stateTv.setText("Speak now…");
+                    if (isRecording && !isPaused) {
+                        binding.stateTv.setText("Speak now…");
+                    }
 
                 });
 
@@ -97,7 +113,7 @@ public class TranscriptActivity extends AppCompatActivity {
                     // reflect status
                     binding.stateTv.setText("Listening…");
                     // keep dictating: start another session if we’re still in active recording state
-                    //restartIfStillRecording(120); // small delay helps avoid BUSY errors
+                    restartSpeechRecognitionIfNeeded();
                 });
             }
 
@@ -105,14 +121,17 @@ public class TranscriptActivity extends AppCompatActivity {
             public void onSpeechError(String error) {
                 runOnUiThread(() -> {
                     // show a friendly error & keep the ui coherent
-                    Toast.makeText(TranscriptActivity.this, error, LENGTH_SHORT).show();
+                    // Only show toast for serious errors, not common "no speech" errors
+                    if (!error.contains("No speech recognized") && !error.contains("No speech input")) {
+                        Toast.makeText(TranscriptActivity.this, error, LENGTH_SHORT).show();
+                    }
                     binding.stateTv.setText(error);
 
                     // common “no speech” / “timeout” cases: auto-retry to feel continuous
                     if (isRecording && !isPaused &&
                             (error.contains("No speech") || error.contains("timeout") || error.contains("busy"))) {
-                        binding.stateTv.setText("…listening again");
-                        //restartIfStillRecording(300);
+                        binding.stateTv.setText("Listening…");
+                        restartSpeechRecognitionIfNeeded();
                     }
                     // for hard failures (permissions/network), you might NOT retry automatically.
                 });
@@ -192,9 +211,9 @@ public class TranscriptActivity extends AppCompatActivity {
 
         updateUIState();
         
-        // TODO: Start your STT recorder here
-        Toast.makeText(this, "Recording started", LENGTH_SHORT).show();
+        // Start speech recognition
         speechRecognizer.startListening();
+        Toast.makeText(this, "Recording started", LENGTH_SHORT).show();
     }
 
     private void pauseRecording() {
@@ -207,9 +226,9 @@ public class TranscriptActivity extends AppCompatActivity {
 
         updateUIState();
         
-        // TODO: Pause your STT recorder here
-        Toast.makeText(this, "Recording paused", LENGTH_SHORT).show();
+        // Stop speech recognition when paused
         speechRecognizer.stopListening();
+        Toast.makeText(this, "Recording paused", LENGTH_SHORT).show();
     }
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -223,9 +242,9 @@ public class TranscriptActivity extends AppCompatActivity {
 
         updateUIState();
         
-        // TODO: Resume your STT recorder here
-        Toast.makeText(this, "Recording resumed", LENGTH_SHORT).show();
+        // Resume speech recognition
         speechRecognizer.startListening();
+        Toast.makeText(this, "Recording resumed", LENGTH_SHORT).show();
     }
 
     private void stopRecording() {
@@ -243,11 +262,9 @@ public class TranscriptActivity extends AppCompatActivity {
 
         updateUIState();
         
-        // TODO: Stop your STT recorder here
-        Toast.makeText(this, "Recording stopped", LENGTH_SHORT).show();
-        // stop the stt engine
+        // Stop speech recognition completely
         speechRecognizer.cancel(); // ensures no stray callbacks after stopping
-        Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Recording stopped", LENGTH_SHORT).show();
     }
 
     private void updateUIState() {
@@ -389,18 +406,50 @@ public class TranscriptActivity extends AppCompatActivity {
         if (sampler != null) {
             sampler.stop();
         }
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
         stopRecordingAnimations();
     }
 
-    private void appendTranscript(String text)
-    {
-        if(text==null || text.trim().isEmpty()) return;
-        if(transcript.length()>0) transcript.append("");
+    private void appendTranscript(String text) {
+        if (text == null || text.trim().isEmpty()) return;
+        
+        // Add space between segments if transcript already has content
+        if (transcript.length() > 0) {
+            transcript.append(" ");
+        }
         transcript.append(text.trim());
         binding.transcriptTv.setText(transcript.toString());
-        // if it's a scrollable TextView, you can scroll to bottom:
-        //   binding.transcriptTv.post(() -> binding.scrollView.fullScroll(View.FOCUS_DOWN));
+        
+        // Scroll to bottom if it's a scrollable TextView
+        // binding.transcriptTv.post(() -> binding.scrollView.fullScroll(View.FOCUS_DOWN));
+    }
 
+    private void restartSpeechRecognitionIfNeeded() {
+        restartSpeechRecognitionWithDelay(1000);
+    }
+    
+    private void restartSpeechRecognitionWithDelay(long delayMs) {
+        if (isRecording && !isPaused) {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (isRecording && !isPaused && speechRecognizer != null) {
+                    try {
+                        // Cancel any previous session before starting new one
+                        speechRecognizer.cancel();
+                        // Start listening again after a brief pause
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            if (isRecording && !isPaused) {
+                                speechRecognizer.startListening();
+                            }
+                        }, 300);
+                    } catch (Exception e) {
+                        // If there's an error restarting, just update the UI
+                        binding.stateTv.setText("Tap to restart listening");
+                    }
+                }
+            }, delayMs);
+        }
     }
 
 
