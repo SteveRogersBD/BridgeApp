@@ -13,10 +13,11 @@ public class BridgeApplication extends Application {
     public void onCreate() {
         super.onCreate();
         
-        // Auto-start floating button if it was previously enabled
+        // Auto-start floating button only if it was previously enabled and permission is granted
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean wasEnabled = prefs.getBoolean(KEY_FLOATING_BUTTON_ENABLED, true); // Default to true
+        boolean wasEnabled = prefs.getBoolean(KEY_FLOATING_BUTTON_ENABLED, false); // Default to false for first launch
         
+        // Only auto-start if user has previously enabled it and permission is still granted
         if (wasEnabled && FloatingButtonManager.canDrawOverlays(this)) {
             FloatingButtonManager.startFloatingButton(this);
         }

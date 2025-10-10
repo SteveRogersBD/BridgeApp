@@ -26,7 +26,7 @@ public class FloatingButtonService extends Service {
     private WindowManager windowManager;
     private View floatingView;
     private WindowManager.LayoutParams params;
-    private FloatingPageOverlay floatingPageOverlay;
+    private FloatingChatOverlay floatingChatOverlay;
     
     // Touch handling variables
     private int initialX, initialY;
@@ -38,7 +38,7 @@ public class FloatingButtonService extends Service {
         super.onCreate();
         createNotificationChannel();
         createFloatingButton();
-        floatingPageOverlay = new FloatingPageOverlay(this);
+        floatingChatOverlay = new FloatingChatOverlay(this);
     }
     
     @Override
@@ -113,12 +113,12 @@ public class FloatingButtonService extends Service {
                                 // Long press - stop service
                                 stopSelf();
                             } else {
-                                // Short press - show floating page overlay
-                                if (floatingPageOverlay != null) {
-                                    if (floatingPageOverlay.isShowing()) {
-                                        floatingPageOverlay.hide();
+                                // Short press - show floating chat overlay
+                                if (floatingChatOverlay != null) {
+                                    if (floatingChatOverlay.isShowing()) {
+                                        floatingChatOverlay.hide();
                                     } else {
-                                        floatingPageOverlay.show();
+                                        floatingChatOverlay.show();
                                     }
                                 }
                             }
@@ -157,7 +157,7 @@ public class FloatingButtonService extends Service {
         
         return new NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Bridge Floating Button")
-            .setContentText("Tap to open quick actions")
+            .setContentText("Tap to open floating chat")
             .setSmallIcon(R.drawable.mic)
             .setContentIntent(pendingIntent)
             .build();
@@ -169,8 +169,8 @@ public class FloatingButtonService extends Service {
         if (floatingView != null && windowManager != null) {
             windowManager.removeView(floatingView);
         }
-        if (floatingPageOverlay != null) {
-            floatingPageOverlay.destroy();
+        if (floatingChatOverlay != null) {
+            floatingChatOverlay.destroy();
         }
         // Save preference that floating button is disabled when service stops
         BridgeApplication.setFloatingButtonEnabled(this, false);
