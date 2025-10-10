@@ -4,4 +4,5 @@
     <string name="pause">Pause</string>
     <string name="play_pause">Play/Pause</string>
     <string name="save_transcript">Save Transcript</string>
+    <string name="dummy_trans">Hello, this is a live transcript.\n\nNew words will appear here in real time as you speak. The text will automatically scroll to show the latest content.\n\nYou can select and copy any part of this transcript.</string>
 </resources>
