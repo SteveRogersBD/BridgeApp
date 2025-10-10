@@ -49,6 +49,16 @@
     <!-- public alias -->
     <style name="Theme.Bridge" parent="Base.Theme.Bridge" />
 
+    <!-- ========= SPLASH THEME ========= -->
+    <style name="Theme.Bridge.Splash" parent="Base.Theme.Bridge">
+        <item name="android:windowBackground">@color/app_bg</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:statusBarColor">@color/app_bg</item>
+        <item name="android:navigationBarColor">@color/app_bg</item>
+    </style>
+
     <!-- ========= SHAPES ========= -->
     <style name="Shape.Bridge.Small" parent="ShapeAppearance.Material3.Corner.Small">
         <item name="cornerFamily">rounded</item>

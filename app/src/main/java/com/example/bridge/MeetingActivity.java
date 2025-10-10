@@ -163,6 +163,16 @@ public class MeetingActivity extends AppCompatActivity {
             Toast.makeText(this, "saved (stub)", Toast.LENGTH_SHORT).show();
         });
 
+        // Add floating button toggle
+        binding.getRoot().findViewById(R.id.floating_toggle_btn).setOnClickListener(v -> {
+            if (FloatingButtonManager.canDrawOverlays(this)) {
+                FloatingButtonManager.startFloatingButton(this);
+                Toast.makeText(this, "Floating button started", Toast.LENGTH_SHORT).show();
+            } else {
+                FloatingButtonManager.requestOverlayPermission(this);
+            }
+        });
+
         binding.pauseBtn.setImageResource(R.drawable.play);
         binding.stateTv.setText("paused");
         binding.timerTv.setText("00:00:00");
@@ -222,6 +232,19 @@ public class MeetingActivity extends AppCompatActivity {
             boolean granted = grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
             binding.pauseBtn.setEnabled(granted);
             if (!granted) Toast.makeText(this, "microphone permission is required.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (FloatingButtonManager.isOverlayPermissionResult(requestCode)) {
+            if (FloatingButtonManager.canDrawOverlays(this)) {
+                FloatingButtonManager.startFloatingButton(this);
+                Toast.makeText(this, "Floating button started", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Overlay permission denied", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
