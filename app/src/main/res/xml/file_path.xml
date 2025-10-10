@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- app-specific external storage/music dir -->
+    <external-files-path
+        name="voice_notes"
+        path="Music/" />
+</paths>
