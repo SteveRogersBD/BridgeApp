@@ -472,3 +472,34 @@ All endpoints return appropriate HTTP status codes:
 - Network issues: Use network profiler in Android Studio
 
 For additional support and detailed feature documentation, refer to the individual README files in the project directory.
+
+---
+
+## 🤝 Contributing Guidelines
+
+Pull requests are welcome! For major changes, open an issue first to discuss scope/design.
+
+**Branching**: `feat/*`, `fix/*`, `chore/*`
+**Commit style**: Conventional Commits
+**PR checklist**: tests, docs, accessible UI, screenshots for UI changes
+
+---
+## 🤝 Contributing
+
+We welcome contributions from the community! Here's how you can help:
+
+### Ways to Contribute
+- 🐛 **Bug Reports**: Found a bug? [Open an issue](https://github.com/SteveRogersBD/BridgeApp/issues)
+- 💡 **Feature Requests**: Have an idea? [Start a discussion](https://github.com/SteveRogersBD/BridgeApp/discussions)
+- 🔧 **Code Contributions**: Submit pull requests for bug fixes or new features
+- 📖 **Documentation**: Help improve our docs and tutorials
+---
+
+## 👤 Contact / Author Info
+
+**Aniruddha Biswas**
+
+* GitHub: [https://github.com/SteveRogersBD](https://github.com/SteveRogersBD)
+* LinkedIn: [https://linkedin.com/in/your-profile](https://www.linkedin.com/in/aniruddha-biswas-atanu-16b708228)
+* Email: [cd43641@truman.edu](mailto:cd43641@truman.edu)
+</div>
