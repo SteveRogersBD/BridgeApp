@@ -68,7 +68,9 @@
         android:clipToPadding="false"
         android:padding="8dp"
         android:scrollbars="none"
-        tools:listitem="@layout/chat_item" />
+        tools:listitem="@layout/chat_item"/>
+
+
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/send_card"
@@ -81,6 +83,7 @@
         app:cardElevation="12dp"
         app:strokeColor="@color/button_bg"
         app:strokeWidth="1dp">
+
 
         <LinearLayout
             android:id="@+id/bottom_rel"
@@ -120,7 +123,28 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
+                android:padding="3dp"
+                app:cardCornerRadius="24dp"
+                app:strokeColor="@color/button_bg"
+                app:cardElevation="4dp">
+
+                <ImageView
+                    android:id="@+id/ai_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/ic_auto_awesome"
+                    android:contentDescription="AI Reply"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:padding="3dp"
                 app:cardBackgroundColor="@color/primary"
                 app:cardCornerRadius="24dp"

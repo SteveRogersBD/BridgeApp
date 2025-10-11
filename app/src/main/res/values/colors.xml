@@ -8,6 +8,7 @@
 
     <!-- ===== NEON PRIMARIES ===== -->
     <color name="primary">#00F0FF</color>          <!-- neon aqua -->
+    <color name="primary_container">#0A1B1F</color> <!-- dark container for primary -->
     <color name="on_primary">#051017</color>       <!-- text/icons on aqua -->
 
     <color name="secondary">#FF3DFF</color>        <!-- neon magenta -->

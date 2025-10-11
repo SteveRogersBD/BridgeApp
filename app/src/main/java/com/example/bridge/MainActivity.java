@@ -13,11 +13,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.bridge.adapters.PagerAdapter;
+import com.example.bridge.adapters.SessionsAdapter;
 import com.example.bridge.databinding.ActivityMainBinding;
 import com.example.bridge.models.PagerItem;
+import com.example.bridge.models.SessionItem;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
@@ -28,8 +31,10 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     List<Integer> list = new ArrayList<>();
     PagerAdapter adapter;
+    SessionsAdapter sessionsAdapter;
     ViewPager2 vp;
-    List<PagerItem>itemList;
+    List<PagerItem> itemList;
+    List<SessionItem> sessionsList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
 
         binding.recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
+
+        // Setup recent sessions
+        setupRecentSessions();
 
         // Setup toolbar
         setSupportActionBar(binding.toolBar);
@@ -148,6 +156,52 @@ public class MainActivity extends AppCompatActivity {
         invalidateOptionsMenu();
     }
     
+    private void setupRecentSessions() {
+        sessionsList = new ArrayList<>();
+        
+        // Create fake demo data with different timestamps
+        long now = System.currentTimeMillis();
+        
+        sessionsList.add(new SessionItem(
+            "Voice Note",
+            "Morning Workout Plan", 
+            "Discussed 5km morning run routine and gym schedule for the week",
+            now - (5 * 60 * 1000) // 5 minutes ago
+        ));
+        
+        sessionsList.add(new SessionItem(
+            "Meeting",
+            "Team Standup Meeting",
+            "Weekly progress review with development team and project updates",
+            now - (2 * 60 * 60 * 1000) // 2 hours ago
+        ));
+        
+        sessionsList.add(new SessionItem(
+            "Chat",
+            "AI Assistant Conversation",
+            "Asked about healthy meal prep ideas and got personalized recipes",
+            now - (4 * 60 * 60 * 1000) // 4 hours ago
+        ));
+        
+        sessionsList.add(new SessionItem(
+            "Voice Note",
+            "Shopping List Reminder",
+            "Created voice note for grocery shopping including organic vegetables",
+            now - (1 * 24 * 60 * 60 * 1000) // 1 day ago
+        ));
+        
+        sessionsList.add(new SessionItem(
+            "Meeting",
+            "Client Presentation",
+            "Presented quarterly results and discussed future project roadmap",
+            now - (2 * 24 * 60 * 60 * 1000) // 2 days ago
+        ));
+
+        sessionsAdapter = new SessionsAdapter(this, sessionsList);
+        binding.sessionsRecyclerView.setAdapter(sessionsAdapter);
+        binding.sessionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
     private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             // Get system bars insets

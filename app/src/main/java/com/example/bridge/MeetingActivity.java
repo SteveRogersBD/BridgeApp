@@ -33,6 +33,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
 
 import com.example.bridge.databinding.ActivityMeetingBinding;
+import com.example.bridge.utils.ActivityLogger;
 import com.example.bridge.utils.AudioLevelSampler;
 import com.example.bridge.utils.GeminiHelper;
 import com.example.bridge.utils.GlowPulseController;
@@ -386,6 +387,9 @@ public class MeetingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        // Log meeting activity before destroying
+        logMeetingActivity();
+        
         super.onDestroy();
         // Clean up resources
         if (timerHandler != null) {
@@ -399,6 +403,18 @@ public class MeetingActivity extends AppCompatActivity {
         // Dismiss AI dialog if showing
         if (aiDialog != null && aiDialog.isShowing()) {
             aiDialog.dismiss();
+        }
+    }
+    
+    private void logMeetingActivity() {
+        String transcript = binding.transcriptTv.getText() != null ? 
+            binding.transcriptTv.getText().toString().trim() : "";
+        
+        if (!transcript.isEmpty()) {
+            String title = "Meeting Session";
+            
+            // Log the meeting activity with transcript content
+            ActivityLogger.logActivity(this, ActivityLogger.ActivityType.MEETING, title, transcript);
         }
     }
     

@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowCompat;
 
 import com.example.bridge.databinding.ActivityVoiceNoteBinding;
+import com.example.bridge.utils.ActivityLogger;
 import com.example.bridge.utils.GeminiHelper;
 
 import java.io.File;
@@ -349,6 +350,9 @@ public class VoiceNoteActivity extends AppCompatActivity implements TextToSpeech
 
     @Override
     protected void onDestroy() {
+        // Log voice note activity before destroying
+        logVoiceNoteActivity();
+        
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
@@ -361,6 +365,18 @@ public class VoiceNoteActivity extends AppCompatActivity implements TextToSpeech
         }
         
         super.onDestroy();
+    }
+    
+    private void logVoiceNoteActivity() {
+        String noteText = binding.editTextMessage.getText() != null ? 
+            binding.editTextMessage.getText().toString().trim() : "";
+        
+        if (!noteText.isEmpty()) {
+            String title = "Voice Note Creation";
+            
+            // Log the voice note activity with the text content
+            ActivityLogger.logActivity(this, ActivityLogger.ActivityType.VOICE_NOTE, title, noteText);
+        }
     }
     
     private void setupWindowInsets() {

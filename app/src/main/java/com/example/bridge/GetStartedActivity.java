@@ -40,7 +40,7 @@ public class GetStartedActivity extends AppCompatActivity {
 
     private void setupClickListener() {
         binding.btnGetStarted.setOnClickListener(v -> {
-            startActivity(new Intent(GetStartedActivity.this, MainActivity.class));
+            startActivity(new Intent(GetStartedActivity.this, RegisterActivity.class));
             finish();
         });
     }

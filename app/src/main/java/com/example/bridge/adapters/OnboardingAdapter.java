@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bridge.R;
 import com.example.bridge.models.PagerItem;
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -52,7 +51,8 @@ public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.On
         // Apply the colors
         ImageViewCompat.setImageTintList(holder.imageView, ColorStateList.valueOf(iconTint));
         holder.titleText.setTextColor(iconTint);
-        holder.cardView.setStrokeColor(stroke);
+        // Note: cardView is now a LinearLayout, so we can't use setStrokeColor
+        // The stroke color styling is handled by the drawable background
 
         // Apply glow background based on position
         if (position == 0) {
@@ -75,7 +75,7 @@ public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.On
         ImageView imageView;
         TextView titleText;
         TextView subtitleText;
-        MaterialCardView cardView;
+        View cardView; // Changed from MaterialCardView to View since it's actually a LinearLayout
         View glowView;
 
         public OnboardingViewHolder(@NonNull View itemView) {

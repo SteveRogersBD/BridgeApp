@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.bridge.adapters.ChatAdapter;
 import com.example.bridge.databinding.ActivityChatBinding;
 import com.example.bridge.models.ChatModel;
+import com.example.bridge.utils.ActivityLogger;
 import com.example.bridge.utils.GeminiHelper;
 import com.example.bridge.utils.SimpleSpeechRecognizer;
 import com.example.bridge.utils.SpeechCaptureManager;
@@ -119,6 +120,7 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         binding.sendBtn.setOnClickListener(onClickListener);
+        binding.aiBtn.setOnClickListener(aiClickListener);
         
         // Set up toolbar buttons
         setupToolbarButtons();
@@ -232,6 +234,65 @@ public class ChatActivity extends AppCompatActivity {
 
     };
 
+    View.OnClickListener aiClickListener = v -> {
+        if (v.getId() == binding.aiBtn.getId()) {
+            generateAIReply();
+        }
+    };
+
+    private void generateAIReply() {
+        // Build context from chat history
+        StringBuilder contextBuilder = new StringBuilder();
+        contextBuilder.append("You are a helpful AI assistant in a chat conversation. ");
+        
+        if (messages.isEmpty()) {
+            // No conversation history - generate a greeting
+            contextBuilder.append("Generate a friendly greeting to start a conversation. ");
+            contextBuilder.append("Keep it warm, welcoming, and encourage the user to share what's on their mind.");
+        } else {
+            contextBuilder.append("Based on the following conversation history, generate a natural and relevant reply. ");
+            contextBuilder.append("Keep your response conversational, helpful, and contextually appropriate.\n\n");
+            contextBuilder.append("Conversation History:\n");
+            
+            // Add recent messages for context (last 10 messages to avoid token limits)
+            int startIndex = Math.max(0, messages.size() - 10);
+            for (int i = startIndex; i < messages.size(); i++) {
+                ChatModel msg = messages.get(i);
+                String sender = (msg.getSendBy() == ChatModel.SENT_BY_ME) ? "User" : "Other";
+                contextBuilder.append(sender).append(": ").append(msg.getMessage()).append("\n");
+            }
+            
+            contextBuilder.append("\nGenerate a helpful and relevant reply as the AI assistant. ");
+        }
+        
+        contextBuilder.append("Keep it concise and natural. Do not include any labels or prefixes in your response.");
+        
+        String prompt = contextBuilder.toString();
+        
+        // Show loading state
+        binding.aiBtn.setEnabled(false);
+        Toast.makeText(ChatActivity.this, "Generating AI reply...", Toast.LENGTH_SHORT).show();
+        
+        gm.callGemini(prompt, new GeminiHelper.GeminiCallback() {
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> {
+                    // Set the AI-generated reply in the text field
+                    binding.textEt.setText(result.trim());
+                    binding.aiBtn.setEnabled(true);
+                    Toast.makeText(ChatActivity.this, "AI reply generated! Edit if needed or send as is.", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                runOnUiThread(() -> {
+                    binding.aiBtn.setEnabled(true);
+                    Toast.makeText(ChatActivity.this, "Failed to generate AI reply: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
 
     private void speak(String text) {
         translate(text, toLang);
@@ -400,6 +461,9 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        // Log chat activity before destroying
+        logChatActivity();
+        
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -408,6 +472,34 @@ public class ChatActivity extends AppCompatActivity {
             speechRecognizer.destroy();
         }
         super.onDestroy();
+    }
+    
+    private void logChatActivity() {
+        if (messages != null && !messages.isEmpty()) {
+            // Create a summary of the chat content
+            StringBuilder chatContent = new StringBuilder();
+            String title = "Chat Session";
+            
+            // Get the first few messages to create context
+            int messagesToInclude = Math.min(5, messages.size());
+            for (int i = 0; i < messagesToInclude; i++) {
+                ChatModel msg = messages.get(i);
+                if (msg.getSendBy() == ChatModel.SENT_BY_ME) {
+                    chatContent.append("User: ");
+                } else {
+                    chatContent.append("AI: ");
+                }
+                chatContent.append(msg.getMessage()).append(" ");
+            }
+            
+            // If there are more messages, indicate that
+            if (messages.size() > messagesToInclude) {
+                chatContent.append("... (").append(messages.size()).append(" total messages)");
+            }
+            
+            // Log the activity
+            ActivityLogger.logActivity(this, ActivityLogger.ActivityType.CHAT, title, chatContent.toString());
+        }
     }
 
 
