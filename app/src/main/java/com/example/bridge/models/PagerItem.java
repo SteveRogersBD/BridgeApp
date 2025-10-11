@@ -3,12 +3,14 @@ package com.example.bridge.models;
 public class PagerItem {
     private int image;
     private String title;
+    private String subTitle;
     private int stroke;
     private int iconTint;
 
-    public PagerItem(int image, String title, int stroke, int iconTint) {
+    public PagerItem(int image, String title, String subTitle, int stroke, int iconTint) {
         this.image = image;
         this.title = title;
+        this.subTitle = subTitle;title = title;
         this.stroke = stroke;
         this.iconTint = iconTint;
     }
@@ -42,5 +44,12 @@ public class PagerItem {
 
     public void setIconTint(int iconTint) {
         this.iconTint = iconTint;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
     }
 }

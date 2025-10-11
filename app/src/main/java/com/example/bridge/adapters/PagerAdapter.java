@@ -20,7 +20,10 @@ import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bridge.ChatActivity;
+import com.example.bridge.EmergencyActivity;
+import com.example.bridge.MeetingActivity;
 import com.example.bridge.R;
+import com.example.bridge.VoiceNoteActivity;
 import com.example.bridge.databinding.ActivityMainBinding;
 import com.example.bridge.models.PagerItem;
 import com.google.android.material.card.MaterialCardView;
@@ -52,6 +55,7 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
         PagerItem item = list.get(position);
         holder.imageView.setImageResource(item.getImage());
         holder.textView.setText(item.getTitle());
+        holder.sub.setText(item.getSubTitle());
 
         // Resolve color resources to actual color values
         @ColorInt int iconTint = ContextCompat.getColor(context, item.getIconTint());
@@ -77,10 +81,13 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
                     context.startActivity(new Intent(context, ChatActivity.class));
                 }
                 else if (position == 1) {
-                    context.startActivity(new Intent(context, ChatActivity.class));
+                    context.startActivity(new Intent(context, MeetingActivity.class));
                 }
                 else if (position == 2) {
-                    context.startActivity(new Intent(context, ChatActivity.class));
+                    context.startActivity(new Intent(context, EmergencyActivity.class));
+                }
+                else if (position == 3) {
+                    context.startActivity(new Intent(context, VoiceNoteActivity.class));
                 }
             }
         });
@@ -95,6 +102,7 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
 
         ImageView imageView;
         TextView textView;
+        TextView sub;
         MaterialCardView cardView;
         LinearLayout linearLayout;
         View view;
@@ -102,6 +110,7 @@ public class PagerAdapter extends RecyclerView.Adapter<PagerAdapter.ViewHolder> 
             super(itemView);
             imageView = itemView.findViewById(R.id.image);
             textView = itemView.findViewById(R.id.title);
+            sub = itemView.findViewById(R.id.subtitle);
             cardView = itemView.findViewById(R.id.card);
             linearLayout = itemView.findViewById(R.id.container);
             view = itemView.findViewById(R.id.view);

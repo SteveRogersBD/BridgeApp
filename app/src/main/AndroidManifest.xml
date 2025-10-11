@@ -19,46 +19,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bridge">
         <activity
+            android:name=".EmergencyActivity"
+            android:exported="false" />
+        <activity
             android:name=".VoiceNoteActivity"
-            android:exported="true">
-
-
-        </activity>
-
-
+            android:exported="true"></activity>
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.Bridge.Splash">
-
-        </activity>
+            android:theme="@style/Theme.Bridge.Splash"></activity>
         <activity
             android:name=".MeetingActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".TranscriptActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".CallActivity"
             android:exported="false" />
         <activity
             android:name=".ChatActivity"
             android:exported="true"
-            android:theme="@style/Theme.Bridge.Chat">
+            android:theme="@style/Theme.Bridge.Chat"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-
         </activity>
 
         <service

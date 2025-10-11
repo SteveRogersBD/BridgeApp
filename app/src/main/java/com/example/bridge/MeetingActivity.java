@@ -18,16 +18,15 @@ import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 
 import com.example.bridge.databinding.ActivityMeetingBinding;
 import com.example.bridge.utils.AudioLevelSampler;
@@ -66,8 +65,18 @@ public class MeetingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Enable edge-to-edge display
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        
         binding = ActivityMeetingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        
+        // Handle system window insets
+        setupWindowInsets();
+        
+        // Setup toolbar buttons
+        setupToolbarButtons();
 
         // Initialize components
         setupAnimations();
@@ -369,6 +378,30 @@ public class MeetingActivity extends AppCompatActivity {
             sampler.stop();
         }
         stopRecordingAnimations();
+    }
+    
+    private void setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            // Get system bars insets
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+            
+            // Apply top padding to toolbar to avoid status bar overlap
+            binding.toolBar.setPadding(
+                binding.toolBar.getPaddingLeft(),
+                topInset,
+                binding.toolBar.getPaddingRight(),
+                binding.toolBar.getPaddingBottom()
+            );
+            
+            return insets;
+        });
+    }
+    
+    private void setupToolbarButtons() {
+        // Back button click listener
+        binding.backBtn.setOnClickListener(v -> {
+            finish(); // Close the activity and go back
+        });
     }
 }
 

@@ -9,6 +9,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -27,22 +30,28 @@ public class MainActivity extends AppCompatActivity {
     PagerAdapter adapter;
     ViewPager2 vp;
     List<PagerItem>itemList;
-    MaterialToolbar topBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Enable edge-to-edge display
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        
+        // Handle system window insets
+        setupWindowInsets();
 
 
         itemList = new ArrayList<>();
-        itemList.add(new PagerItem(R.drawable.chat,"Conversation",
+        itemList.add(new PagerItem(R.drawable.chat,"Conversation","Have a chat",
                 R.color.primary,R.color.button_bg));
-        itemList.add(new PagerItem(R.drawable.trans,"Transcription",
+        itemList.add(new PagerItem(R.drawable.trans,"Transcription","Attend a meeting",
                 R.color.stroke_green,R.color.stroke_green));
-        itemList.add(new PagerItem(R.drawable.call,"Call",
+        itemList.add(new PagerItem(R.drawable.call," Emergency","Call for safety",
                 R.color.stroke_red,R.color.stroke_red));
-        itemList.add(new PagerItem(R.drawable.mic,"Transcription",
+        itemList.add(new PagerItem(R.drawable.mic,"Voice Note","Create a voice note",
                 R.color.stroke_orange,R.color.stroke_orange));
 
         adapter = new PagerAdapter(MainActivity.this, itemList);
@@ -51,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         binding.recyclerView.setLayoutManager(new GridLayoutManager(MainActivity.this,2));
 
-        topBar = findViewById(R.id.topAppBar);
-        setSupportActionBar(topBar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        // Setup toolbar
+        setSupportActionBar(binding.toolBar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
     }
 
     @Override
@@ -135,5 +146,22 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         // Refresh menu when returning to activity
         invalidateOptionsMenu();
+    }
+    
+    private void setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            // Get system bars insets
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+            
+            // Apply top padding to toolbar to avoid status bar overlap
+            binding.toolBar.setPadding(
+                binding.toolBar.getPaddingLeft(),
+                topInset,
+                binding.toolBar.getPaddingRight(),
+                binding.toolBar.getPaddingBottom()
+            );
+            
+            return insets;
+        });
     }
 }
