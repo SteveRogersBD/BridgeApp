@@ -216,6 +216,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/transcript_card">
 
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    app:cardBackgroundColor="@color/surface"
+                    app:cardCornerRadius="32dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="@color/stroke_orange"
+                    app:strokeWidth="2dp">
+
+                    <ImageView
+                        android:id="@+id/ai_btn"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/play_pause"
+                        android:focusable="true"
+                        android:padding="16dp"
+                        android:src="@drawable/trans"
+                        app:tint="@color/stroke_orange" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+
                 <!-- Pause/Resume Button -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"

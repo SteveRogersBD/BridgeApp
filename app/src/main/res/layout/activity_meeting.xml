@@ -276,10 +276,11 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Floating Button Toggle -->
+                <!-- AI Button -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     app:cardBackgroundColor="@color/surface"
                     app:cardCornerRadius="32dp"
                     app:cardElevation="6dp"
@@ -287,18 +288,19 @@
                     app:strokeWidth="2dp">
 
                     <ImageView
-                        android:id="@+id/floating_toggle_btn"
+                        android:id="@+id/ai_btn1"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
-                        android:contentDescription="Toggle floating button"
+                        android:contentDescription="AI Assistant"
                         android:focusable="true"
                         android:padding="16dp"
-                        android:src="@drawable/mic"
+                        android:src="@drawable/trans"
                         app:tint="@color/primary" />
 
                 </com.google.android.material.card.MaterialCardView>
+
 
             </LinearLayout>
 

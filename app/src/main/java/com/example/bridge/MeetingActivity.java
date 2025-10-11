@@ -5,6 +5,7 @@ import static android.widget.Toast.LENGTH_SHORT;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,8 +15,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -30,6 +34,7 @@ import androidx.core.view.WindowCompat;
 
 import com.example.bridge.databinding.ActivityMeetingBinding;
 import com.example.bridge.utils.AudioLevelSampler;
+import com.example.bridge.utils.GeminiHelper;
 import com.example.bridge.utils.GlowPulseController;
 import com.example.bridge.utils.SimpleSpeechRecognizer;
 
@@ -61,6 +66,10 @@ public class MeetingActivity extends AppCompatActivity {
     private AudioLevelSampler sampler;
     private ObjectAnimator micPulseAnimator;
     private ObjectAnimator micRotateAnimator;
+    
+    // AI functionality
+    private GeminiHelper geminiHelper;
+    private AlertDialog aiDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +94,9 @@ public class MeetingActivity extends AppCompatActivity {
         // Set up glow controller
         glowCtl = new GlowPulseController(binding.micGlow);
         sampler = new AudioLevelSampler();
+        
+        // Initialize GeminiHelper
+        geminiHelper = new GeminiHelper();
 
         // init launcher
         speechLauncher = registerForActivityResult(
@@ -172,15 +184,20 @@ public class MeetingActivity extends AppCompatActivity {
             Toast.makeText(this, "saved (stub)", Toast.LENGTH_SHORT).show();
         });
 
-        // Add floating button toggle
-        binding.getRoot().findViewById(R.id.floating_toggle_btn).setOnClickListener(v -> {
-            if (FloatingButtonManager.canDrawOverlays(this)) {
-                FloatingButtonManager.startFloatingButton(this);
-                Toast.makeText(this, "Floating button started", Toast.LENGTH_SHORT).show();
-            } else {
-                FloatingButtonManager.requestOverlayPermission(this);
-            }
+        // AI button click listener
+        binding.getRoot().findViewById(R.id.ai_btn1).setOnClickListener(v -> {
+            showAIPromptDialog();
         });
+
+//        // Add floating button toggle
+//        binding.getRoot().findViewById(R.id.floating_toggle_btn).setOnClickListener(v -> {
+//            if (FloatingButtonManager.canDrawOverlays(this)) {
+//                FloatingButtonManager.startFloatingButton(this);
+//                Toast.makeText(this, "Floating button started", Toast.LENGTH_SHORT).show();
+//            } else {
+//                FloatingButtonManager.requestOverlayPermission(this);
+//            }
+//        });
 
         binding.pauseBtn.setImageResource(R.drawable.play);
         binding.stateTv.setText("paused");
@@ -378,6 +395,11 @@ public class MeetingActivity extends AppCompatActivity {
             sampler.stop();
         }
         stopRecordingAnimations();
+        
+        // Dismiss AI dialog if showing
+        if (aiDialog != null && aiDialog.isShowing()) {
+            aiDialog.dismiss();
+        }
     }
     
     private void setupWindowInsets() {
@@ -401,6 +423,102 @@ public class MeetingActivity extends AppCompatActivity {
         // Back button click listener
         binding.backBtn.setOnClickListener(v -> {
             finish(); // Close the activity and go back
+        });
+    }
+    
+    private void showAIPromptDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        android.view.View dialogView = inflater.inflate(R.layout.dialog_ai_prompt, null);
+        builder.setView(dialogView);
+        
+        aiDialog = builder.create();
+        aiDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        
+        // Get references to dialog views
+        EditText editTextPrompt = dialogView.findViewById(R.id.editTextPrompt);
+        LinearLayout buttonSend = dialogView.findViewById(R.id.buttonSend);
+        LinearLayout buttonCancel = dialogView.findViewById(R.id.buttonCancel);
+        LinearLayout progressLayout = dialogView.findViewById(R.id.aiProgressLayout);
+        
+        // Set up button click listeners
+        buttonCancel.setOnClickListener(v -> aiDialog.dismiss());
+        
+        buttonSend.setOnClickListener(v -> {
+            String prompt = editTextPrompt.getText().toString().trim();
+            if (prompt.isEmpty()) {
+                Toast.makeText(this, "Please enter a prompt", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Process the AI prompt
+            processAIPrompt(prompt, progressLayout, buttonSend, buttonCancel);
+        });
+        
+        aiDialog.show();
+    }
+    
+    private void processAIPrompt(String prompt, LinearLayout progressLayout, LinearLayout buttonSend, LinearLayout buttonCancel) {
+        String currentTranscript = binding.transcriptTv.getText() == null ? "" : binding.transcriptTv.getText().toString().trim();
+        
+        if (currentTranscript.isEmpty()) {
+            Toast.makeText(this, "Please record some transcript first, then use AI to enhance it", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        // Show progress bar and hide buttons
+        progressLayout.setVisibility(android.view.View.VISIBLE);
+        buttonSend.setVisibility(android.view.View.GONE);
+        buttonCancel.setVisibility(android.view.View.GONE);
+        
+        // Start glowing animation
+        android.view.animation.Animation glowAnimation = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.glow_pulse);
+        progressLayout.startAnimation(glowAnimation);
+        
+        // Create the full prompt for Gemini
+        String fullPrompt = "Please enhance the following transcript based on this instruction: \"" + prompt + "\"\n\n" +
+                           "Original transcript: \"" + currentTranscript + "\"\n\n" +
+                           "Please return only the enhanced transcript without any additional explanation or formatting.";
+        
+        // Call Gemini API
+        geminiHelper.callGemini(fullPrompt, new GeminiHelper.GeminiCallback() {
+            @Override
+            public void onSuccess(String result) {
+                runOnUiThread(() -> {
+                    // Hide progress and update the transcript EditText
+                    progressLayout.clearAnimation();
+                    progressLayout.setVisibility(android.view.View.GONE);
+                    
+                    // Clean up the result (remove any extra formatting)
+                    String enhancedTranscript = result.trim();
+                    if (enhancedTranscript.startsWith("\"") && enhancedTranscript.endsWith("\"")) {
+                        enhancedTranscript = enhancedTranscript.substring(1, enhancedTranscript.length() - 1);
+                    }
+                    
+                    // Update the transcript EditText
+                    binding.transcriptTv.setText(enhancedTranscript);
+                    
+                    // Close the dialog
+                    aiDialog.dismiss();
+                    
+                    // Show success message
+                    Toast.makeText(MeetingActivity.this, "Transcript enhanced successfully!", Toast.LENGTH_SHORT).show();
+                });
+            }
+            
+            @Override
+            public void onFailure(Throwable t) {
+                runOnUiThread(() -> {
+                    // Hide progress and show buttons again
+                    progressLayout.clearAnimation();
+                    progressLayout.setVisibility(android.view.View.GONE);
+                    buttonSend.setVisibility(android.view.View.VISIBLE);
+                    buttonCancel.setVisibility(android.view.View.VISIBLE);
+                    
+                    // Show error message
+                    Toast.makeText(MeetingActivity.this, "AI processing failed: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
         });
     }
 }
