@@ -5,39 +5,81 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_bg"
-    android:orientation="vertical"
+    android:fitsSystemWindows="false"
     tools:context=".ChatActivity">
 
-
     <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolBar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
         android:layout_alignParentTop="true"
-        android:id="@+id/toolBar"/>
+        android:background="@color/primary"
+        android:fitsSystemWindows="false"
+        app:titleTextColor="@color/on_primary">
 
-    <!-- Chat RecyclerView -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp">
+
+            <ImageButton
+                android:id="@+id/back_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_back"
+                android:contentDescription="Back"
+                app:tint="@color/on_primary" />
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bridge"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/on_primary"
+                android:layout_marginStart="8dp" />
+
+            <ImageButton
+                android:id="@+id/settings_btn"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_settings"
+                android:contentDescription="Settings"
+                app:tint="@color/on_primary" />
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolBar"
+        android:layout_above="@+id/send_card"
         android:clipToPadding="false"
         android:padding="8dp"
-        tools:listitem="@layout/chat_item"
-        android:layout_above="@+id/send_card"
-        android:scrollbars="none" />
+        android:scrollbars="none"
+        tools:listitem="@layout/chat_item" />
 
-    <!-- Bottom Input Section -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/send_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="14dp"
         app:cardBackgroundColor="@color/surface"
         app:cardCornerRadius="24dp"
         app:cardElevation="12dp"
-        android:layout_marginEnd="14dp"
         app:strokeColor="@color/button_bg"
-        android:layout_alignParentBottom="true"
         app:strokeWidth="1dp">
 
         <LinearLayout
@@ -48,7 +90,6 @@
             android:gravity="center"
             android:padding="2dp">
 
-            <!-- Input Field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -72,19 +113,17 @@
                     android:layout_marginLeft="8dp"
                     android:textColor="@color/on_surface"
                     android:textColorHint="@color/on_surface_variant"
-                    android:textSize="16sp"
-                    tools:ignore="HardcodedText,RtlHardcoded" />
+                    android:textSize="16sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Send Button -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:padding="3dp"
                 app:cardBackgroundColor="@color/primary"
                 app:cardCornerRadius="24dp"
-                android:padding="3dp"
                 app:cardElevation="4dp">
 
                 <ImageView
@@ -103,7 +142,6 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- ① Floating Mic Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_mic"
         android:layout_width="wrap_content"
@@ -113,13 +151,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/app_name"
-        app:useCompatPadding="true"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/on_primary"
         android:src="@drawable/mic"
-        app:srcCompat="@drawable/mic" />
+        app:backgroundTint="@color/primary"
+        app:srcCompat="@drawable/mic"
+        app:tint="@color/on_primary"
+        app:useCompatPadding="true" />
 
-    <!-- ② Fullscreen Lottie Overlay -->
     <RelativeLayout
         android:id="@+id/mic_overlay"
         android:layout_width="match_parent"
@@ -128,30 +165,29 @@
         android:focusable="true"
         android:visibility="gone">
 
-        <!-- scrim to dim background -->
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#99000000"/>
 
-        <!-- centered lottie animation -->
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/mic_lottie"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="200dp"
-            app:lottie_rawRes="@raw/audio_wave"
             app:lottie_autoPlay="false"
-            app:lottie_loop="true"/>
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/audio_wave"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/mic_lottie"
             android:text="Listening...."
             android:gravity="center"
-            android:textSize="30sp"
-            />
+            android:textSize="30sp" />
+
     </RelativeLayout>
 
 </RelativeLayout>

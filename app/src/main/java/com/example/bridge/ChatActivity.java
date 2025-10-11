@@ -4,13 +4,22 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,17 +46,50 @@ public class ChatActivity extends AppCompatActivity {
     ChatAdapter adapter;
     GeminiHelper gm;
     List<ChatModel> messages = new ArrayList<>();
+    List<ChatModel> engMessages = new ArrayList<>();
     TextToSpeech tts;
     private static final int RECORD_AUDIO_PERMISSION_CODE = 1001;
     SimpleSpeechRecognizer speechRecognizer;
+    private String fromLang = "English";
+    private String toLang = "English";
+
+    
+    // Language arrays for translation settings
+    private String[] languages = {
+        "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Azerbaijani",
+        "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Catalan",
+        "Cebuano", "Chinese (Simplified)", "Chinese (Traditional)", "Corsican", "Croatian", "Czech",
+        "Danish", "Dutch", "English", "Esperanto", "Estonian", "Filipino",
+        "Finnish", "French", "Frisian", "Galician", "Georgian", "German",
+        "Greek", "Gujarati", "Haitian Creole", "Hausa", "Hawaiian", "Hebrew",
+        "Hindi", "Hmong", "Hungarian", "Icelandic", "Igbo", "Indonesian",
+        "Irish", "Italian", "Japanese", "Javanese", "Kannada", "Kazakh",
+        "Khmer", "Korean", "Kurdish", "Kyrgyz", "Lao", "Latin",
+        "Latvian", "Lithuanian", "Luxembourgish", "Macedonian", "Malagasy", "Malay",
+        "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian", "Myanmar",
+        "Nepali", "Norwegian", "Pashto", "Persian", "Polish", "Portuguese",
+        "Punjabi", "Romanian", "Russian", "Samoan", "Scots Gaelic", "Serbian",
+        "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian",
+        "Somali", "Spanish", "Sundanese", "Swahili", "Swedish", "Tajik",
+        "Tamil", "Telugu", "Thai", "Turkish", "Ukrainian", "Urdu",
+        "Uzbek", "Vietnamese", "Welsh", "Xhosa", "Yiddish", "Yoruba", "Zulu"
+    };
 
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Enable edge-to-edge display
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        
+        // Handle system window insets
+        setupWindowInsets();
+        
         //get permission for voice record
         getPermission();
         adapter = new ChatAdapter(this,messages);
@@ -77,6 +119,9 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         binding.sendBtn.setOnClickListener(onClickListener);
+        
+        // Set up toolbar buttons
+        setupToolbarButtons();
 
         // Initialize speech recognizer
         speechRecognizer = new SimpleSpeechRecognizer(this, new SimpleSpeechRecognizer
@@ -99,7 +144,9 @@ public class ChatActivity extends AppCompatActivity {
 
                 // Add message to chat if text is not empty
                 if (!text.trim().isEmpty()) {
+
                     addMessage(text, ChatModel.SENT_BY_OTHER);
+                    translate(text, toLang);
                     //speak(text);
                     Toast.makeText(ChatActivity.this, "Added: " + text, Toast.LENGTH_SHORT).show();
                 } else {
@@ -157,6 +204,29 @@ public class ChatActivity extends AppCompatActivity {
             speak(text);
             // Clear input field
             binding.textEt.setText("");
+
+
+            String prompt = translate(text, fromLang);
+
+            gm.callGemini(prompt, new GeminiHelper.GeminiCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    speak(result);
+                    result = "Translation: " + result;
+                    ChatModel msg = new ChatModel(result,ChatModel.SENT_BY_ME);
+                    runOnUiThread(()->{
+
+                        messages.add(msg);
+                        adapter.notifyItemInserted(messages.size() - 1);
+                        binding.mainRecycler.smoothScrollToPosition(messages.size());
+                    });
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                }
+            });
         }
 
 
@@ -164,6 +234,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private void speak(String text) {
+        translate(text, toLang);
         tts.setPitch(1.0f);
         tts.setSpeechRate(1.0f);
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "u1");
@@ -243,6 +314,90 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    private void setupWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            // Get system bars insets
+            int topInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top;
+            int bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+            
+            // Apply top padding to toolbar to avoid status bar overlap
+            binding.toolBar.setPadding(
+                binding.toolBar.getPaddingLeft(),
+                topInset,
+                binding.toolBar.getPaddingRight(),
+                binding.toolBar.getPaddingBottom()
+            );
+            
+            // Apply bottom margin to send card to avoid navigation bar overlap
+            android.view.ViewGroup.MarginLayoutParams sendCardParams = 
+                (android.view.ViewGroup.MarginLayoutParams) binding.sendCard.getLayoutParams();
+            sendCardParams.bottomMargin = bottomInset + 16; // 16dp additional margin
+            binding.sendCard.setLayoutParams(sendCardParams);
+            
+            // Apply bottom margin to FAB to avoid navigation bar overlap
+            android.view.ViewGroup.MarginLayoutParams fabParams = 
+                (android.view.ViewGroup.MarginLayoutParams) binding.fabMic.getLayoutParams();
+            fabParams.bottomMargin = bottomInset + 80; // 80dp to account for send card height
+            binding.fabMic.setLayoutParams(fabParams);
+            
+            return insets;
+        });
+    }
+
+    private void setupToolbarButtons() {
+        // Back button click listener
+        binding.backBtn.setOnClickListener(v -> {
+            finish(); // Close the activity and go back
+        });
+        
+        // Settings button click listener
+        binding.settingsBtn.setOnClickListener(v -> {
+            showTranslationSettingsDialog();
+        });
+    }
+    
+    private void showTranslationSettingsDialog() {
+        // Inflate the dialog layout
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_translation_settings, null);
+        
+        // Get references to the dropdown views
+        AutoCompleteTextView fromLanguageSpinner = dialogView.findViewById(R.id.from_language_spinner);
+        AutoCompleteTextView toLanguageSpinner = dialogView.findViewById(R.id.to_language_spinner);
+        
+        // Create adapters for the dropdowns
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, languages);
+        ArrayAdapter<String> toAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, languages);
+        
+        // Set adapters to the dropdowns
+        fromLanguageSpinner.setAdapter(fromAdapter);
+        toLanguageSpinner.setAdapter(toAdapter);
+        
+        // Set default selections
+        fromLanguageSpinner.setText("English", false);
+        toLanguageSpinner.setText("English", false);
+        
+        // Create and show the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+        
+        // Set up the Done button
+        dialogView.findViewById(R.id.done_btn).setOnClickListener(v -> {
+            fromLang = fromLanguageSpinner.getText().toString();
+            toLang = toLanguageSpinner.getText().toString();
+
+            
+            // TODO: Save the selected languages (will be implemented later)
+            Toast.makeText(this, "Translation settings saved: " + fromLang + " → "
+                    + toLang, Toast.LENGTH_SHORT).show();
+            
+            dialog.dismiss();
+        });
+        
+        dialog.show();
+    }
+
     @Override
     protected void onDestroy() {
         if (tts != null) {
@@ -255,5 +410,20 @@ public class ChatActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+
+
+    private String translate(String inputText, String to) {
+        // template: from → to, and return ONLY the translated text
+        String prompt = "You are a professional translator.\n"
+                + "Translate the following text to %s.\n"
+                + "Keep the tone, context, and meaning intact.\n\n"
+                + "Text:\n"
+                + "%s\n\n"
+                + "Only return the translated text.\n"
+                + "Do not include any explanations, notes, or labels.";
+
+        // IMPORTANT: return the formatted string (don’t drop it!)
+        return String.format(prompt, to, inputText);
+    }
 
 }

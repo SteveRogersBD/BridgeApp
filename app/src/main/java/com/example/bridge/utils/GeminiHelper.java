@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 
 public class GeminiHelper {
-    private final String apiKey = "AIzaSyArkbkY79OXEMGq3Z__rtPWfUgVz34EVyE";
+    private final String apiKey = "AIzaSyCEAwCQPUcF-8wnHjRiLkncyJUOgiCLTng";
 
     public GeminiHelper() {
 
