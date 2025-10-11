@@ -500,6 +500,6 @@ We welcome contributions from the community! Here's how you can help:
 **Aniruddha Biswas**
 
 * GitHub: [https://github.com/SteveRogersBD](https://github.com/SteveRogersBD)
-* LinkedIn: [https://linkedin.com/in/your-profile](https://www.linkedin.com/in/aniruddha-biswas-atanu-16b708228)
+* LinkedIn: [https://linkedin.com/in/Aniruddha Biswas Atanu](https://www.linkedin.com/in/aniruddha-biswas-atanu-16b708228)
 * Email: [cd43641@truman.edu](mailto:cd43641@truman.edu)
 </div>
