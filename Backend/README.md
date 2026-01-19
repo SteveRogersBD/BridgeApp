@@ -18,7 +18,7 @@ graph TD
         API[FastAPI Endpoint /recommend]
         
         subgraph Agent ["🤖 LangGraph Workflow"]
-            State[Shared State\n(Transcript, Summary, Recs)]
+            State["Shared State\n(Transcript, Summary, Recs)"]
             Node1[Analyze Context]
             Node2[Recommend Actions]
         end
