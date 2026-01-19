@@ -75,12 +75,14 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void handleSignIn() {
-        String email = binding.etEmail.getText().toString().trim();
-        String password = binding.etPassword.getText().toString().trim();
-
-        if (validateInputs(email, password)) {
-            performLogin(email, password);
-        }
+//        String email = binding.etEmail.getText().toString().trim();
+//        String password = binding.etPassword.getText().toString().trim();
+//
+//        if (validateInputs(email, password)) {
+//            performLogin(email, password);
+//        }
+        startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        finish();
     }
 
     private void performLogin(String email, String password) {

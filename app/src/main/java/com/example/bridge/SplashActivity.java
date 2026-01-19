@@ -55,7 +55,7 @@ public class SplashActivity extends AppCompatActivity {
     }
     
     private void proceedToMainActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        Intent intent = new Intent(SplashActivity.this, OnboardingActivity.class);
         startActivity(intent);
         finish();
     }

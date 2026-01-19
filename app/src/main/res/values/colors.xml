@@ -50,4 +50,11 @@
     <color name="card_bg_orange">#1A1209</color>  <!-- dark amber surface -->
     <color name="stroke_orange">#FF7A1A</color>   <!-- neon orange -->
 
+    <!-- Missing colors -->
+    <color name="background_primary">@color/background</color>
+    <color name="background_secondary">@color/surface</color>
+    <color name="text_primary">@color/on_background</color>
+    <color name="text_secondary">@color/on_surface_variant</color>
+    <color name="error">@color/stroke_red</color>
+
 </resources>

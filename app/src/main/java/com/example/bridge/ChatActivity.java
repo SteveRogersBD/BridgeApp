@@ -33,7 +33,7 @@ import com.example.bridge.databinding.ActivityChatBinding;
 import com.example.bridge.models.ChatModel;
 import com.example.bridge.utils.ActivityLogger;
 import com.example.bridge.utils.GeminiHelper;
-import com.example.bridge.utils.SimpleSpeechRecognizer;
+import android.speech.RecognizerIntent;
 import com.example.bridge.utils.SpeechCaptureManager;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
     List<ChatModel> engMessages = new ArrayList<>();
     TextToSpeech tts;
     private static final int RECORD_AUDIO_PERMISSION_CODE = 1001;
-    SimpleSpeechRecognizer speechRecognizer;
+    private static final int SPEECH_REQUEST_CODE = 1002;
     private String fromLang = "English";
     private String toLang = "English";
 
@@ -124,49 +124,8 @@ public class ChatActivity extends AppCompatActivity {
         
         // Set up toolbar buttons
         setupToolbarButtons();
-
-        // Initialize speech recognizer
-        speechRecognizer = new SimpleSpeechRecognizer(this, new SimpleSpeechRecognizer
-                .SpeechListener() {
-            @Override
-            public void onSpeechReady() {
-                Log.d(TAG, "Speech ready - showing UI");
-                // Show recording UI
-                binding.micOverlay.setVisibility(View.VISIBLE);
-                binding.micLottie.playAnimation();
-                Toast.makeText(ChatActivity.this, "Listening... Speak now!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSpeechResult(String text) {
-                Log.d(TAG, "Speech result: " + text);
-                // Hide recording UI
-                binding.micOverlay.setVisibility(View.GONE);
-                binding.micLottie.cancelAnimation();
-
-                // Add message to chat if text is not empty
-                if (!text.trim().isEmpty()) {
-
-                    addMessage(text, ChatModel.SENT_BY_OTHER);
-                    translate(text, toLang);
-                    //speak(text);
-                    Toast.makeText(ChatActivity.this, "Added: " + text, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(ChatActivity.this, "Empty text received", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onSpeechError(String error) {
-                Log.e(TAG, "Speech error: " + error);
-                // Hide recording UI and show error
-                binding.micOverlay.setVisibility(View.GONE);
-                binding.micLottie.cancelAnimation();
-                Toast.makeText(ChatActivity.this, error, Toast.LENGTH_LONG).show();
-            }
-        });
-
-        // Set up mic button
+        
+        // Set up mic button with Google speech recognition
         setupMicButton();
 
 
@@ -188,7 +147,9 @@ public class ChatActivity extends AppCompatActivity {
                     RECORD_AUDIO_PERMISSION_CODE);
         } else {
             // Permission already granted
+            Log.d(TAG, "Microphone permission already granted");
             binding.fabMic.setEnabled(true);
+            setupMicButton(); // Ensure mic button is properly set up
         }
     }
     View.OnClickListener onClickListener = v->{
@@ -320,59 +281,61 @@ public class ChatActivity extends AppCompatActivity {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted
+                Log.d(TAG, "Audio permission granted");
                 binding.fabMic.setEnabled(true);
+                
+                // Re-setup the mic button with proper listeners
+                setupMicButton();
+                
                 Toast.makeText(this, "Voice input ready! Press and hold mic to record", Toast.LENGTH_SHORT).show();
             } else {
                 // Permission denied
+                Log.w(TAG, "Audio permission denied");
                 binding.fabMic.setEnabled(false);
-                Toast.makeText(this, "Microphone permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Microphone permission denied. Voice input disabled.", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void setupMicButton() {
+        Log.d(TAG, "Setting up mic button with Google speech recognition");
+        
         // Enable mic button only if permission is granted
-        binding.fabMic.setEnabled(
-                ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED
-        );
+        boolean hasPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED;
+        
+        binding.fabMic.setEnabled(hasPermission);
+        
+        if (!hasPermission) {
+            Log.w(TAG, "Microphone permission not granted");
+            return;
+        }
 
-        binding.fabMic.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (ContextCompat.checkSelfPermission(ChatActivity.this,
-                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(ChatActivity.this,
-                            "Microphone permission required", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        // Start listening when button is pressed
-                        Log.d(TAG, "Mic button pressed - starting listening");
-                        speechRecognizer.startListening();
-                        v.setPressed(true);
-                        return true;
-
-                    case MotionEvent.ACTION_UP:
-                        // Stop listening when button is released
-                        Log.d(TAG, "Mic button released - stopping listening");
-                        speechRecognizer.stopListening();
-                        v.setPressed(false);
-                        return true;
-
-                    case MotionEvent.ACTION_CANCEL:
-                        // Cancel listening if touch is cancelled
-                        Log.d(TAG, "Mic button cancelled - cancelling listening");
-                        speechRecognizer.cancel();
-                        v.setPressed(false);
-                        return true;
-                }
-                return false;
-            }
+        // Click listener to start GameActivity
+        binding.fabMic.setOnClickListener(v -> {
+            Log.d(TAG, "FabMic button clicked - starting GameActivity");
+            
+            // Navigate to GameActivity
+            Intent gameIntent = new Intent(ChatActivity.this, GameActivity.class);
+            startActivity(gameIntent);
         });
+        
+        Log.d(TAG, "Mic button setup complete");
+    }
+    
+    private void startSpeechRecognition() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...");
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        
+        try {
+            startActivityForResult(intent, SPEECH_REQUEST_CODE);
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting speech recognition", e);
+            Toast.makeText(this, "Speech recognition not available", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupWindowInsets() {
@@ -460,6 +423,49 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (results != null && !results.isEmpty()) {
+                String spokenText = results.get(0);
+                Log.d(TAG, "Speech recognition result: " + spokenText);
+                
+                if (!spokenText.trim().isEmpty()) {
+                    // Translate the transcribed text first, then add combined message
+                    String prompt = translate(spokenText, toLang);
+                    
+                    gm.callGemini(prompt, new GeminiHelper.GeminiCallback() {
+                        @Override
+                        public void onSuccess(String result) {
+                            runOnUiThread(() -> {
+                                // Combine original text and translation in one message on left side
+                                String combinedMessage = spokenText + "\n\nTranslation: " + result;
+                                addMessage(combinedMessage, ChatModel.SENT_BY_OTHER);
+                                Toast.makeText(ChatActivity.this, "Message with translation added", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            runOnUiThread(() -> {
+                                // If translation fails, just add the original text
+                                addMessage(spokenText, ChatModel.SENT_BY_OTHER);
+                                Toast.makeText(ChatActivity.this, "Translation failed, original text added", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "No speech detected", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == SPEECH_REQUEST_CODE) {
+            Toast.makeText(this, "Speech recognition cancelled or failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         // Log chat activity before destroying
         logChatActivity();
@@ -467,9 +473,6 @@ public class ChatActivity extends AppCompatActivity {
         if (tts != null) {
             tts.stop();
             tts.shutdown();
-        }
-        if (speechRecognizer != null) {
-            speechRecognizer.destroy();
         }
         super.onDestroy();
     }

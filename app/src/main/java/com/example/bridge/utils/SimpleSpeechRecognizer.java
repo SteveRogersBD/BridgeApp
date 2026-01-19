@@ -44,15 +44,31 @@ public class SimpleSpeechRecognizer {
             return;
         }
         
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
-        
-        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2000);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2000);
+        try {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+            
+            if (speechRecognizer == null) {
+                Log.e(TAG, "Failed to create speech recognizer");
+                if (listener != null) {
+                    listener.onSpeechError("Failed to initialize speech recognizer");
+                }
+                return;
+            }
+            
+            recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 3000);
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up speech recognizer", e);
+            if (listener != null) {
+                listener.onSpeechError("Error initializing speech recognizer: " + e.getMessage());
+            }
+            return;
+        }
         
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
@@ -157,19 +173,50 @@ public class SimpleSpeechRecognizer {
     }
     
     public void startListening() {
-        if (speechRecognizer != null && !isListening) {
-            Log.d(TAG, "Starting to listen");
-            isListening = true;
-            
+        if (speechRecognizer == null) {
+            Log.e(TAG, "Speech recognizer is null, cannot start listening");
+            if (listener != null) {
+                listener.onSpeechError("Speech recognizer not initialized");
+            }
+            return;
+        }
+        
+        if (isListening) {
+            Log.w(TAG, "Already listening, ignoring start request");
+            return;
+        }
+        
+        Log.d(TAG, "Starting to listen");
+        isListening = true;
+        
+        try {
             // Cancel any previous session
             speechRecognizer.cancel();
             
             // Start listening after a short delay
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                if (isListening && speechRecognizer != null) {
-                    speechRecognizer.startListening(recognizerIntent);
+                if (isListening && speechRecognizer != null && recognizerIntent != null) {
+                    try {
+                        speechRecognizer.startListening(recognizerIntent);
+                        Log.d(TAG, "Speech recognition started successfully");
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error starting speech recognition", e);
+                        isListening = false;
+                        if (listener != null) {
+                            listener.onSpeechError("Failed to start recording: " + e.getMessage());
+                        }
+                    }
+                } else {
+                    Log.w(TAG, "Cannot start listening - conditions not met");
+                    isListening = false;
                 }
             }, 100);
+        } catch (Exception e) {
+            Log.e(TAG, "Error in startListening", e);
+            isListening = false;
+            if (listener != null) {
+                listener.onSpeechError("Error starting speech recognition: " + e.getMessage());
+            }
         }
     }
     
